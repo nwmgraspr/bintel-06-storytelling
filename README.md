@@ -76,7 +76,7 @@ open a machine terminal in your `Repos` folder:
 
 ```shell
 # Replace username with YOUR GitHub username.
-git clone https://github.com/username/bintel-06-storytelling
+git clone https://github.com/nwmgraspr/bintel-06-storytelling
 
 cd bintel-06-storytelling
 code .
