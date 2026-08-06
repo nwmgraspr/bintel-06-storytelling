@@ -31,8 +31,8 @@ Storytelling process:
 6. Write the story and recommendation in docs/index.md.
 
 Business Question:
-- Which product category contributes the most sales in the East region,
-  and when are its sales strongest?
+- Which of the East and West regions generates higher sales by product
+  category, and how do monthly sales compare for the leading category?
 
 Data Source:
 - data/reporting/sales_reporting_case.csv
