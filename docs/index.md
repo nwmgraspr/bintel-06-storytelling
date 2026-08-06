@@ -41,31 +41,46 @@ but answer a different business question.
 
 ## Phase 4. Technical Modification
 
-Make one small technical modification to the example project.
+### Modification Description
 
-Possible modifications include:
+I modified the storytelling example project to compare sales between two regions instead of analyzing only one region.
 
-- Change a selected value.
-- Change a chart title.
-- Change a chart label.
-- Change a chart palette.
-- Change a chart output file name.
-- Display in a different sort order.
-- Change a log message to be more clear or better formatted.
+### What I Changed
+Changed the analysis from one selected region to two regions:
+- East
+- West
+- Updated the sales summary functions to handle both regions.
+- Updated chart titles:
+  - Sales by Category: East vs West
+  - Monthly Office Sales: East vs West
+- Updated the key-results output to report both regions
 
-Describe your small technical modification to the example project.
+### Why I Chose This Change
 
-Include:
+I chose this modification because comparing regions provides more useful business insight than analyzing only one region. It helps identify category performance and sales trends across markets.
 
-- What you changed
-- Why you chose that change
-- How you verified that it worked
-- What result, output, chart, metric, or behavior confirmed the change
+### Verification
 
-Compared with the example project,
-explain what is different and why the change matters.
+I verified the change by running:
 
-Was it easy, or surprisingly challenging and why do you think so?
+- uv run python -m bizintel.storytelling_modi_case
+
+- The workflow completed successfully and generated the updated charts.
+
+- Confirmed results:
+
+Compared regions: East and West
+Leading category: Office
+Leading category sales: $612,390.42
+Strongest month: 2025-05
+
+### Difference From the Example
+
+The original example analyzed only the East region. The modified version compares East and West, making the analysis more useful for business decisions.
+
+## Reflection
+
+The modification was more challenging than expected because changing from one region to two required updates across filtering, functions, charts, and reporting. The main challenge was keeping all parts of the workflow consistent.
 
 ## Phase 5. Custom Project
 
