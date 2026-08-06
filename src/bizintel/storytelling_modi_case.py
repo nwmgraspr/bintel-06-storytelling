@@ -87,8 +87,8 @@ STORYTELLING_CHART_FILE_2: Final[Path] = (
 
 # The selected region defines the focus of this example story.
 # Your category and selection will depend on the question you have selected.
-SELECTED_REGION: Final[str] = "East"
-
+SELECTED_REGION_1: Final[str] = "East"
+SELECTED_REGION_2: Final[str] = "West"
 
 # === Section 2. Define Reusable Functions ===
 
@@ -188,7 +188,8 @@ def load_reporting_data(file_path: Path) -> pd.DataFrame:
 
 def summarize_category_sales(
     df_reporting: pd.DataFrame,
-    selected_region: str,
+    selected_region_1: str,
+    selected_region_2: str,
 ) -> pd.DataFrame:
     """Summarize total sales by category for the selected region.
 
@@ -202,7 +203,10 @@ def summarize_category_sales(
     Returns:
         DataFrame with Category and TotalSales columns.
     """
-    LOG.info(f"Summarizing category sales for Region = {selected_region!r}")
+    LOG.info(
+        f"Summarizing category sales for Regions = "
+        f"{selected_region_1!r} and {selected_region_2!r}"
+    )
 
     # A slice focuses the analysis on one selected Region value.
     # Create a new DataFrame with only the rows for the selected region.
@@ -210,10 +214,9 @@ def summarize_category_sales(
     # to filter the rows where the "Region" column matches the selected region.
     # Call the .copy() method to create a new DataFrame
     # that is independent of the original.
-    df_region: pd.DataFrame = df_reporting.loc[
-        df_reporting["Region"] == selected_region
+    df_region = df_reporting.loc[
+        df_reporting["Region"].isin([selected_region_1, selected_region_2])
     ].copy()
-
     # If the slice is empty, raise an error to indicate that the selected region
     # we are interested in does not exist in the reporting data.
     # Note: This error message uses an f-string with the
@@ -222,8 +225,8 @@ def summarize_category_sales(
     # more information.
     if df_region.empty:
         raise ValueError(
-            f"No sales were found for region {selected_region!r}. "
-            "Update SELECTED_REGION to a region present in the data."
+            f"No sales were found for regions "
+            f"{selected_region_1!r} and {selected_region_2!r}."
         )
 
     # After filtering to the slice we want to study,
@@ -275,12 +278,9 @@ def summarize_category_sales(
 
     # FOCUS ON THE HUMAN LEVEL SKILLS and
     # use tools to help with the implementation.
-    df_category_sales: pd.DataFrame = (
-        df_region.groupby("Category", as_index=False)
-        .agg(TotalSales=("SaleAmount", "sum"))
-        .sort_values("TotalSales", ascending=False)
+    df_category_sales = df_region.groupby(["Region", "Category"], as_index=False).agg(
+        TotalSales=("SaleAmount", "sum")
     )
-
     # MAKE PRESENTABLE.
     # Round the TotalSales column to two decimal places for better readability.
     # How many digits depends on your data.
@@ -327,7 +327,7 @@ def select_top_category(df_category_sales: pd.DataFrame) -> str:
     #
     # Then, wrap the result in the built in Python method str()
     # to ensure the selected value is stored as a string.
-    top_category: str = str(df_category_sales.iloc[0]["Category"])
+    top_category = df_category_sales.groupby("Category")["TotalSales"].sum().idxmax()
 
     # FINALLY, log key information before exiting the function.
     # In this case, log the selected leading category.
@@ -342,7 +342,8 @@ def select_top_category(df_category_sales: pd.DataFrame) -> str:
 
 def summarize_monthly_sales(
     df_reporting: pd.DataFrame,
-    selected_region: str,
+    selected_region_1: str,
+    selected_region_2: str,
     selected_category: str,
 ) -> pd.DataFrame:
     """Summarize monthly sales for one region and category.
@@ -358,12 +359,15 @@ def summarize_monthly_sales(
     Returns:
         DataFrame with YearMonth and TotalSales columns.
     """
-    LOG.info(f"Summarizing monthly sales for Region = {selected_region!r}")
+    LOG.info(
+        f"Summarizing monthly sales for Regions = "
+        f"{selected_region_1!r} and {selected_region_2!r}"
+    )
     LOG.info(f"Summarizing monthly sales for Category = {selected_category!r}")
 
     # A dice focuses on the selected Region and Category values.
     df_selected: pd.DataFrame = df_reporting.loc[
-        (df_reporting["Region"] == selected_region)
+        (df_reporting["Region"].isin([selected_region_1, selected_region_2]))
         & (df_reporting["Category"] == selected_category)
     ].copy()
 
@@ -400,7 +404,8 @@ def summarize_monthly_sales(
 def identify_key_results(
     df_category_sales: pd.DataFrame,
     df_monthly_sales: pd.DataFrame,
-    selected_region: str,
+    selected_region_1: str,
+    selected_region_2: str,
 ) -> None:
     """Identify and log the key factual results from the analysis.
 
@@ -410,18 +415,24 @@ def identify_key_results(
     limitation, and recommendation in docs/index.md.
 
     Args:
-        df_category_sales: Total sales by category in the selected region.
+        df_category_sales: Total sales by category across the selected regions.
         df_monthly_sales: Monthly sales for the selected leading category.
-        selected_region: Region represented in the analysis.
+        selected_region_1: First region represented in the analysis.
+        selected_region_2: Second region represented in the analysis.
 
     Returns:
         None
     """
     LOG.info("Identifying key results")
-
     # The category results are sorted from greatest to least total sales.
-    top_category: str = str(df_category_sales.iloc[0]["Category"])
-    top_category_sales: float = float(df_category_sales.iloc[0]["TotalSales"])
+    top_category_summary = (
+        df_category_sales.groupby("Category", as_index=False)
+        .agg(TotalSales=("TotalSales", "sum"))
+        .sort_values("TotalSales", ascending=False)
+    )
+
+    top_category: str = str(top_category_summary.iloc[0]["Category"])
+    top_category_sales: float = float(top_category_summary.iloc[0]["TotalSales"])
 
     # Find the month containing the greatest sales value.
     # Call the built-in pandas DataFrame method idxmax() on the TotalSales column
@@ -464,7 +475,7 @@ def identify_key_results(
     # Write the explanation and recommendation in docs/index.md.
     # Include the dollar sign where needed
     # and :, with 0.2f to format the float with two decimal places.
-    LOG.info(f"  Selected region: {selected_region}")
+    LOG.info(f"  Compared regions: {selected_region_1} and {selected_region_2}")
     LOG.info(f"  Leading category: {top_category}")
     LOG.info(f"  Leading category sales: ${top_category_sales:,.2f}")
     LOG.info(f"  Strongest month: {strongest_month}")
@@ -502,9 +513,9 @@ def main() -> None:
     LOG.info("CALL a function to summarize sales by category........")
     df_category_sales = summarize_category_sales(
         df_reporting,
-        SELECTED_REGION,
+        SELECTED_REGION_1,
+        SELECTED_REGION_2,
     )
-
     # STEP 3: USE THE FIRST RESULT TO GUIDE THE NEXT ANALYSIS.
     # Select the leading category instead of choosing an unrelated
     # category before seeing the first result.
@@ -516,7 +527,8 @@ def main() -> None:
     LOG.info("CALL a function to summarize monthly sales........")
     df_monthly_sales = summarize_monthly_sales(
         df_reporting,
-        SELECTED_REGION,
+        SELECTED_REGION_1,
+        SELECTED_REGION_2,
         top_category,
     )
 
@@ -528,7 +540,7 @@ def main() -> None:
         df=df_category_sales,
         x="Category",
         y="TotalSales",
-        title=f"Sales by Category in {SELECTED_REGION}",
+        title=f"Sales by Category: {SELECTED_REGION_1} vs {SELECTED_REGION_2}",
         xlabel="Product Category",
         ylabel="Total Sales ($)",
         palette="Blues_d",
@@ -541,7 +553,7 @@ def main() -> None:
         df=df_monthly_sales,
         x="YearMonth",
         y="TotalSales",
-        title=f"Monthly {top_category} Sales in {SELECTED_REGION}",
+        title=f"Monthly {top_category} Sales: {SELECTED_REGION_1} vs {SELECTED_REGION_2}",
         xlabel="Month",
         ylabel="Total Sales ($)",
     )
@@ -555,7 +567,8 @@ def main() -> None:
     identify_key_results(
         df_category_sales,
         df_monthly_sales,
-        SELECTED_REGION,
+        SELECTED_REGION_1,
+        SELECTED_REGION_2,
     )
 
     LOG.info("CALL a function to show charts........")
