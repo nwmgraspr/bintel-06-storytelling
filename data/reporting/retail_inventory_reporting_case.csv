@@ -1,0 +1,16 @@
+YearMonth,Category,ProductName,TotalQuantitySold,TotalRevenue,AverageInventoryRemaining
+2025-01,Office Supplies,Notebook,30,179.7,270.0
+2025-01,Electronics,Wireless Mouse,15,389.85,105.0
+2025-01,Electronics,Keyboard,12,551.88,68.0
+2025-01,Furniture,Office Chair,4,799.96,36.0
+2025-02,Electronics,Wireless Mouse,22,571.78,83.0
+2025-02,Office Supplies,Desk Lamp,18,539.82,132.0
+2025-02,Furniture,Office Chair,6,1199.94,30.0
+2025-03,Office Supplies,Notebook,45,269.55,225.0
+2025-03,Electronics,Wireless Mouse,35,909.65,48.0
+2025-03,Electronics,Keyboard,25,1149.75,43.0
+2025-04,Electronics,Keyboard,30,1379.7,13.0
+2025-04,Office Supplies,Desk Lamp,20,599.8,112.0
+2025-05,Office Supplies,Notebook,60,359.4,165.0
+2025-05,Electronics,Wireless Mouse,40,1039.6,8.0
+2025-05,Furniture,Office Chair,8,1599.92,22.0
